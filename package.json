@@ -31,7 +31,7 @@
     "eslint-plugin-react": "^6.2.1",
     "file-loader": "^0.9.0",
     "grommet-icon-loader": "^0.4.0",
-    "gulp": "^4.0.2",
+    "gulp": "^3.9.1",
     "gulp-babel": "^6.1.2",
     "gulp-cache": "^0.4.5",
     "gulp-env": "^0.4.0",
