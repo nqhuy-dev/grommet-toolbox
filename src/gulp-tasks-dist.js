@@ -5,6 +5,7 @@ import gulpOptionsBuilder from './gulp-options-builder';
 import gulpTasksCore from './gulp-tasks-core';
 import gulpTasksTest from './gulp-tasks-test';
 import gulpTasksLinters from './gulp-tasks-linters';
+import { series } from 'gulp';
 
 export function distTasks (gulp, opts) {
 
@@ -37,7 +38,7 @@ export function distTasks (gulp, opts) {
     }
   });
 
-  gulp.task('dist', ['dist-preprocess'], (done) => {
+  gulp.task('dist', series('dist-preprocess', (done) => {
 
     let webpackConfigPath = path.resolve(
       __dirname, 'webpack.dist.config.js'
@@ -66,7 +67,7 @@ export function distTasks (gulp, opts) {
         .pipe(gulpWebpack(config))
         .pipe(gulp.dest(options.dist)).on('end', done);
     }
-  });
+  }));
 };
 
 export default distTasks;

@@ -7,6 +7,7 @@ import deepAssign from 'deep-assign';
 
 import gulpOptionsBuilder from './gulp-options-builder';
 import gulpTasksCore from './gulp-tasks-core';
+import { series } from 'gulp';
 
 export function devTasks (gulp, opts) {
 
@@ -31,7 +32,7 @@ export function devTasks (gulp, opts) {
     }
   });
 
-  gulp.task('dev', ['dev-preprocess'], () => {
+  gulp.task('dev', series('dev-preprocess', () => {
 
     let webpackConfigPath = path.resolve(
       __dirname, 'webpack.dev.config.js'
@@ -157,7 +158,7 @@ export function devTasks (gulp, opts) {
       res.sendStatus(200);
     });
 
-  });
+  }));
 };
 
 export default devTasks;

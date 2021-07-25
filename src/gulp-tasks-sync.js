@@ -1,3 +1,4 @@
+import { series } from 'gulp';
 import rsync from 'gulp-rsync';
 
 import gulpOptionsBuilder from './gulp-options-builder';
@@ -13,7 +14,7 @@ export function syncTasks (gulp, opts) {
 
   gulp.task('syncPre', (callback) => runSequence('dist', callback));
 
-  gulp.task('sync', ['syncPre'], () => {
+  gulp.task('sync', series('syncPre', () => {
     if (options.sync) {
       gulp.src(options.dist)
         .pipe(rsync({
@@ -31,7 +32,7 @@ export function syncTasks (gulp, opts) {
         }));
     }
 
-  });
+  }));
 };
 
 export default syncTasks;
