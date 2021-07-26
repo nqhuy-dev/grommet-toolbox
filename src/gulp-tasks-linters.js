@@ -70,8 +70,8 @@ function jslint(gulp, opts) {
 };
 
 export function linterTasks (gulp, opts) {
-  scsslint(gulp, opts);
-  jslint(gulp, opts);
+  gulp.task(scsslint(gulp, opts));
+  gulp.task(jslint(gulp, opts));
 };
 
 export default linterTasks;
