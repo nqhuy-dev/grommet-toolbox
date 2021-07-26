@@ -5,6 +5,38 @@ import gutil from 'gulp-util';
 
 import gulpOptionsBuilder from './gulp-options-builder';
 
+let watch;
+
+function test(gulp, opts) {
+  const options = gulpOptionsBuilder(opts);
+  if (watch) {
+    process.env.NODE_ENV = 'test';
+  }
+  if (options.testPaths) {
+    return gulp.src(options.testPaths)
+      .pipe(gulpif(!watch, envs))
+      .pipe(jest({
+        modulePathIgnorePatterns: [
+          "<rootDir>/dist/",
+          "<rootDir>/templates/"
+        ],
+        testPathIgnorePatterns: options.testPaths.filter(
+          (path) => path.startsWith('!')
+        ).map((path) => path.substring(1)),
+        rootDir: options.base || process.cwd(),
+        verbose: true,
+        ...options.argv
+      }))
+      .on('error', (error) => {
+        gutil.log(error.message);
+        if (!watch) {
+          process.exit(1);
+        }
+      })
+      .pipe(gulpif(!watch, envs.reset));
+  }
+};
+
 export function testTasks (gulp, opts) {
 
   const envs = env.set({
@@ -14,37 +46,7 @@ export function testTasks (gulp, opts) {
   const runSequence = require('run-sequence').use(gulp);
 
   const options = gulpOptionsBuilder(opts);
-
-  let watch;
-
-  gulp.task('test', () => {
-    if (watch) {
-      process.env.NODE_ENV = 'test';
-    }
-    if (options.testPaths) {
-      return gulp.src(options.testPaths)
-        .pipe(gulpif(!watch, envs))
-        .pipe(jest({
-          modulePathIgnorePatterns: [
-            "<rootDir>/dist/",
-            "<rootDir>/templates/"
-          ],
-          testPathIgnorePatterns: options.testPaths.filter(
-            (path) => path.startsWith('!')
-          ).map((path) => path.substring(1)),
-          rootDir: options.base || process.cwd(),
-          verbose: true,
-          ...options.argv
-        }))
-        .on('error', (error) => {
-          gutil.log(error.message);
-          if (!watch) {
-            process.exit(1);
-          }
-        })
-        .pipe(gulpif(!watch, envs.reset));
-    }
-  });
+  gulp.task(test(gulp, opts));
 
   gulp.task('test:update', () => {
     if (options.testPaths) {
@@ -112,3 +114,4 @@ export function testTasks (gulp, opts) {
 };
 
 export default testTasks;
+export { test };

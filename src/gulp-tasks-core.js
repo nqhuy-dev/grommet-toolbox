@@ -12,6 +12,7 @@ import pathIsAbsolute from 'path-is-absolute';
 import gulpOptionsBuilder from './gulp-options-builder';
 import { parallel } from 'gulp';
 import { jslint, scsslint } from './gulp-tasks-linters';
+import { test } from './gulp-tasks-test';
 
 let loaded;
 
@@ -161,7 +162,7 @@ export function coreTasks (gulp, opts) {
 
     gulp.task('clear-cache', (done) => cache.clearAll(done));
 
-    gulp.task('pre-commit', parallel(options.preCommitTasks || [jslint, scsslint,'test']));
+    gulp.task('pre-commit', parallel(options.preCommitTasks || [jslint, scsslint, test]));
 
     gulp.task('node-clean', (done) => {
       require('rimraf')(path.resolve(process.cwd(), 'node_modules'), (err) => {
