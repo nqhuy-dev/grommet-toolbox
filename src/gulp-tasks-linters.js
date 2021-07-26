@@ -6,7 +6,16 @@ import deepAssign from 'deep-assign';
 import sassLint from 'gulp-sass-lint';
 import gulpOptionsBuilder from './gulp-options-builder';
 
-function scsslint(gulp) {
+function scsslint(gulp, opts) {
+  const options = gulpOptionsBuilder(opts);
+
+  let scssLintPath = path.resolve(process.cwd(), '.sass-lint.yml');
+  try {
+    fs.accessSync(scssLintPath, fs.F_OK);
+  } catch (e) {
+    scssLintPath = path.resolve(__dirname, '../.sass-lint.yml');
+  }
+  
   if (options.scsslint) {
     return gulp.src(options.scssAssets || [])
       .pipe(sassLint({
@@ -20,6 +29,17 @@ function scsslint(gulp) {
 
 function jslint(gulp, opts) {
   const options = gulpOptionsBuilder(opts);
+  let esLintPath = options.eslintConfigPath || path.resolve(process.cwd(), '.eslintrc');
+  try {
+    fs.accessSync(esLintPath, fs.F_OK);
+  } catch (e) {
+    esLintPath = path.resolve(__dirname, '../.eslintrc');
+  }
+
+  if (options.customEslintPath) {
+    eslintOverride = require(options.customEslintPath);
+    console.warn('customEslintPath has been deprecated. You should use eslintOverride instead');
+  }
 
   let eslintOverride = options.eslintOverride ?
     require(options.eslintOverride) : {};
@@ -50,29 +70,7 @@ function jslint(gulp, opts) {
 };
 
 export function linterTasks (gulp, opts) {
-
-  const options = gulpOptionsBuilder(opts);
-
-  let scssLintPath = path.resolve(process.cwd(), '.sass-lint.yml');
-  try {
-    fs.accessSync(scssLintPath, fs.F_OK);
-  } catch (e) {
-    scssLintPath = path.resolve(__dirname, '../.sass-lint.yml');
-  }
-
-  let esLintPath = options.eslintConfigPath || path.resolve(process.cwd(), '.eslintrc');
-  try {
-    fs.accessSync(esLintPath, fs.F_OK);
-  } catch (e) {
-    esLintPath = path.resolve(__dirname, '../.eslintrc');
-  }
-
-  if (options.customEslintPath) {
-    eslintOverride = require(options.customEslintPath);
-    console.warn('customEslintPath has been deprecated. You should use eslintOverride instead');
-  }
-
-  scsslint(gulp);
+  scsslint(gulp, opts);
   jslint(gulp, opts);
 };
 
