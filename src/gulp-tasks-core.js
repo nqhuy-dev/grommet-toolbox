@@ -64,7 +64,7 @@ export function coreTasks (gulp, opts) {
       });
     });
 
-    /* gulp.task('generate-icons', (done) => {
+    gulp.task('generate-icons', (done) => {
       const basePath = options.base || process.cwd();
       const iconsConfig = options.icons || {};
       let iconInputFolder = iconsConfig.source;
@@ -148,92 +148,7 @@ export function coreTasks (gulp, opts) {
       } else {
         done();
       }
-    });*/
-    function generateIcons (done) {
-      const basePath = options.base || process.cwd();
-      const iconsConfig = options.icons || {};
-      let iconInputFolder = iconsConfig.source;
-      if (iconInputFolder) {
-        if (!pathIsAbsolute(iconsConfig.source)) {
-          iconInputFolder = path.resolve(
-            basePath, iconsConfig.source || 'src/img/icons'
-          );
-        }
-
-        fs.readdir(iconInputFolder, (err, icons) => {
-          if (icons) {
-            if (iconsConfig.destination) {
-              icons.forEach((icon, index) => {
-                if (/\.svg$/.test(icon)) {
-                  var iconPath = path.join(iconInputFolder, icon);
-                  var content = fs.readFileSync(iconPath, 'utf8');
-                  var query = options.icons.context ?
-                    `?context=${options.icons.context}` : '?context=grommet/';
-                  query += (
-                    '&copyright=(C) Copyright 2014-2015 Hewlett Packard Enterprise Development LP'
-                  );
-                  var loaderContext = {
-                    query: query,
-                    resourcePath: iconPath,
-                    addDependency: () => {},
-                    async: () => {
-                      return (err, result) => {
-                        var iconDestFolder = iconsConfig.destination;
-                        if (!pathIsAbsolute(iconsConfig.destination)) {
-                          iconDestFolder = path.resolve(
-                            basePath, iconsConfig.destination
-                          );
-                        }
-
-                        del.sync([iconDestFolder]);
-
-                        mkdirp(iconDestFolder, (err) => {
-
-                          if (err) {
-                            throw err;
-                          }
-
-                          var componentName = icon.replace('.svg', '.js');
-                          componentName = componentName.replace(/^(.)|-([a-z])/g,
-                            (g) => {
-                              return g.length > 1 ?
-                                g[1].toUpperCase() : g.toUpperCase();
-                            }
-                          );
-
-                          var destinationFile = path.resolve(
-                            iconDestFolder, componentName
-                          );
-
-                          fs.writeFile(destinationFile, result, (err) => {
-                            if (err) {
-                              throw err;
-                            }
-
-                            if (index === icons.length - 1) {
-                              done();
-                            }
-                          });
-                        });
-                      };
-                    }
-                  };
-                  loader.apply(loaderContext, [content]);
-                }
-              });
-            } else {
-              console.log(
-                'Please specify the options.icons.destination property in your gulpfile.'
-              );
-            }
-          } else {
-            done();
-          }
-        });
-      } else {
-        done();
-      }
-    };
+    });
 
     gulp.task('preprocess', (callback) =>
       runSequence(
