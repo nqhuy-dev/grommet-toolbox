@@ -161,9 +161,7 @@ export function coreTasks (gulp, opts) {
 
     gulp.task('clear-cache', (done) => cache.clearAll(done));
 
-    gulp.task(jslint(gulp, opts));
-    gulp.task(scsslint(gulp, opts));
-    gulp.task('pre-commit', series('jslint', 'scsslint'));
+    gulp.task('pre-commit', series(jslint, scsslint));
 
     gulp.task('node-clean', (done) => {
       require('rimraf')(path.resolve(process.cwd(), 'node_modules'), (err) => {
