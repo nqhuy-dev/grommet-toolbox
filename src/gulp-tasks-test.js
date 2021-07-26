@@ -13,6 +13,7 @@ function test(gulp, opts) {
     process.env.NODE_ENV = 'test';
   }
   if (options.testPaths) {
+    console.log(options.testPaths);
     return gulp.src(options.testPaths)
       .pipe(gulpif(!watch, envs))
       .pipe(jest({
