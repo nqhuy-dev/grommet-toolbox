@@ -62,6 +62,7 @@
     "yargs": "^5.0.0"
   },
   "scripts": {
+    "postinstall": "npm run build",
     "build": "node_modules/.bin/babel src --out-dir lib --copy-files --loose-mode"
   }
 }
